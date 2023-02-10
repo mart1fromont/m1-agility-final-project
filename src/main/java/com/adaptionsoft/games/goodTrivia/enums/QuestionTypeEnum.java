@@ -12,7 +12,7 @@ public enum QuestionTypeEnum {
 
     private final String name;
 
-    private QuestionTypeEnum(String name) {
+    QuestionTypeEnum(String name) {
         this.name = name;
     }
 

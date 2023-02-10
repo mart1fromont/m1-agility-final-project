@@ -10,6 +10,11 @@ public class Place {
 
     private final int position;
 
+    /**
+     * Constructor
+     * @param questionType question type
+     * @param position position
+     */
     public Place(QuestionTypeEnum questionType, int position) {
         this.questionType = questionType;
         this.position = position;

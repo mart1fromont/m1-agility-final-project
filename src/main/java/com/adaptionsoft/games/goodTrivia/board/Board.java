@@ -8,7 +8,6 @@ import com.adaptionsoft.games.goodTrivia.enums.QuestionTypeEnum;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class Board {
 
@@ -18,6 +17,7 @@ public class Board {
 
     /**
      * Add a place to the board
+     *
      * @param category the category of the place
      */
     public void addPlace(QuestionTypeEnum category) {
@@ -26,56 +26,50 @@ public class Board {
 
     /**
      * Add a question to the board
+     *
      * @param question the question to addPlayer
      */
     public void addQuestion(IQuestion question) {
         this.questions.add(question);
     }
 
-    public void askQuestion(final QuestionTypeEnum category) throws NoMoreQuestionInCategoryException {
-		// Get first question of the category
-		Optional<IQuestion> question = this.getQuestions().stream()
-				.filter(q -> q.getType().equals(category))
-				.findFirst();
+    /**
+     * Asks a question of the given category
+     *
+     * @param category the category of the question
+     * @return the question
+     */
+    public IQuestion askQuestion(final QuestionTypeEnum category) {
+        // Get first question of the category
+        final IQuestion question = this.questions.stream()
+                .filter(q -> q.getType().equals(category))
+                .findFirst()
+                .orElseThrow(() -> new NoMoreQuestionInCategoryException(category));
 
-		// If there is a question, then remove it from the list and print it
-		if (question.isPresent()) {
-			this.getQuestions().remove(question.get());
-			System.out.println(question.get().getQuestion());
-		} else {
-			throw new NoMoreQuestionInCategoryException(category);
-		}
-	}
+        // If there is a question, then remove it from the list and print it
+        this.questions.remove(question);
+        return question;
+    }
 
     /**
      * Gets the place at the given position
+     *
      * @param position the position of the place
      * @return the place
      */
     public Place getPlace(int position) {
-        Optional<Place> optPlace = this.getPlaces().stream()
+        return this.places.stream()
                 .filter(p -> p.getPosition() == position)
-                .findFirst();
-
-        if (optPlace.isEmpty()) {
-            throw new PlaceNotFoundException(position);
-        }
-        return optPlace.get();
-    }
-
-    private List<Place> getPlaces() {
-        return places;
-    }
-
-    private List<IQuestion> getQuestions() {
-        return questions;
+                .findFirst()
+                .orElseThrow(() -> new PlaceNotFoundException(position));
     }
 
     /**
      * Gets the number of places on the board
+     *
      * @return the number of places
      */
     public int getNumberOfPlaces() {
-        return this.getPlaces().size();
+        return this.places.size();
     }
 }

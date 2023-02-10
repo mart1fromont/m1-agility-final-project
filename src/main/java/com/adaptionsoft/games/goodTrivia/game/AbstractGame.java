@@ -4,6 +4,7 @@ import com.adaptionsoft.games.IGame;
 import com.adaptionsoft.games.goodTrivia.board.Board;
 import com.adaptionsoft.games.goodTrivia.player.Player;
 import com.adaptionsoft.games.goodTrivia.enums.QuestionTypeEnum;
+import com.adaptionsoft.games.goodTrivia.question.IQuestion;
 import com.adaptionsoft.games.goodTrivia.question.impl.PopQuestion;
 import com.adaptionsoft.games.goodTrivia.question.impl.RockQuestion;
 import com.adaptionsoft.games.goodTrivia.question.impl.ScienceQuestion;
@@ -13,6 +14,8 @@ import java.util.LinkedList;
 
 /**
  * New implementation for OldAndUglyGame class
+ *
+ * @author A better developer. Far better.
  */
 public abstract class AbstractGame implements IGame {
     // Constants
@@ -22,7 +25,7 @@ public abstract class AbstractGame implements IGame {
     private final LinkedList<Player> players = new LinkedList<>();
     private final Board board;
     private Player currentPlayer;
-    private boolean isGettingOutOfPenaltyBox; // RM : It's not a bug, it's a feature
+    private boolean isGettingOutOfPenaltyBox; // RM : It's not a bug, it's a feature, I swear
 
     /**
      * Constructor
@@ -89,11 +92,10 @@ public abstract class AbstractGame implements IGame {
         }
 
         // - We ask a corresponding question
-        this.addLog(currentPlayer.getName()
-                + "'s new location is "
-                + currentPlayer.getCurrentPlace());
+        this.addLog(String.format("%s's new location is %d", currentPlayer.getName(), currentPlayer.getCurrentPlace()));
         this.addLog("The category is " + currentCategory().getName());
-        this.board.askQuestion(currentCategory());
+        final IQuestion question = this.board.askQuestion(currentCategory());
+        this.addLog(question.getQuestion());
     }
 
     /**
@@ -133,10 +135,7 @@ public abstract class AbstractGame implements IGame {
         if (!this.currentPlayer.hasPenalty() || isGettingOutOfPenaltyBox) {
             this.addLog("Answer was correct!!!!");
             this.currentPlayer.increaseScore();
-            this.addLog(currentPlayer.getName()
-                    + " now has "
-                    + this.currentPlayer.getScore()
-                    + " Gold Coins.");
+            this.addLog(String.format("%s now has %d Gold Coins.", currentPlayer.getName(), this.currentPlayer.getScore()));
 
             boolean winner = hasCurrentPlayerWin();
             this.currentPlayer = getNextPlayer();
