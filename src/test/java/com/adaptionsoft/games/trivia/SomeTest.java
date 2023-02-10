@@ -1,7 +1,8 @@
 package com.adaptionsoft.games.trivia;
 
 
-import com.adaptionsoft.games.uglytrivia.Game;
+import com.adaptionsoft.games.IGame;
+import com.adaptionsoft.games.goodTrivia.game.ConsoleLogGame;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -9,24 +10,20 @@ import java.nio.file.Files;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SomeTest {
 
-    private final int GOLDEN_TESTS = 500;
+    private final static int GOLDEN_TESTS = 500;
 
     @Test
     public void caracterizationTest() throws IOException {
         for (int seed = 1; seed < GOLDEN_TESTS; seed++) {
-            testSeed(seed, false);
+            testSeed(seed);
         }
     }
 
-    private void testSeed(int seed, boolean printExpected) throws IOException {
-        String expectedOutput = extractOutput(new Random(seed), new Game());
-        if (printExpected) {
-            System.out.println(expectedOutput);
-        }
+    private void testSeed(int seed) throws IOException {
+        String expectedOutput = extractOutput(new Random(seed), new ConsoleLogGame());
 
         final String filepath = "src\\test\\java\\com\\adaptionsoft\\games\\trivia\\results\\" + seed + ".txt";
         final File file = new File(filepath);
@@ -45,10 +42,10 @@ public class SomeTest {
         }
     }
 
-    private String extractOutput(Random rand, Game aGame) {
-        aGame.add("Chet");
-        aGame.add("Pat");
-        aGame.add("Sue");
+    private String extractOutput(Random rand, IGame aGame) {
+        aGame.addPlayer("Chet");
+        aGame.addPlayer("Pat");
+        aGame.addPlayer("Sue");
 
         PrintStream old = System.out;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -60,9 +57,10 @@ public class SomeTest {
                 aGame.roll(rand.nextInt(5) + 1);
 
                 if (rand.nextInt(9) == 7) {
-                    notAWinner = aGame.wrongAnswer();
+                    aGame.wrongAnswer();
+                    notAWinner = true;
                 } else {
-                    notAWinner = aGame.wasCorrectlyAnswered();
+                    notAWinner = aGame.correctAnswer();
                 }
 
             } while (notAWinner);
